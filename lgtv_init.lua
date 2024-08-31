@@ -4,11 +4,11 @@
 
 local tv_input = "HDMI_3" -- Input to which your Mac is connected
 local tv_ip = "192.168.2.109" -- IP address of the TV. can be found using ~/bin/lgtv scan ssl
-local connection_name = "MacBook Pro" -- name of the connection
+local connection_name = "MacBook Pro Test" -- name of the connection
 local switch_input_on_wake = true -- Switch input to Mac when waking the TV
 local prevent_sleep_when_using_other_input = true -- Prevent sleep when TV is set to other input (ie: you're watching Netflix and your Mac goes to sleep)
-local debug = false  -- If you run into issues, set to true to enable debug messages
-local control_audio = true -- Control TV volume and mute button events from keyboard
+local debug = true  -- If you run into issues, set to true to enable debug messages
+local control_audio = false -- Control TV volume and mute button events from keyboard
 local disable_lgtv = false
 -- NOTE: You can disable this script by setting the above variable to true, or by creating a file named
 -- `disable_lgtv` in the same directory as this file, or at ~/.disable_lgtv.
@@ -22,6 +22,7 @@ local lgtv_cmd = lgtv_path.." --ssl --name "..tv_name
 local bscpy_path = "~/bin/bscpylgtv" -- Full path to bscpylgtv executable
 local bscpy_cmd = bscpy_path.." "..tv_ip
 local app_id = "com.webos.app."..tv_input:lower():gsub("_", "")
+local previousScreens = hs.screen.allScreens() -- Initialize the previous screen list
 
 function lgtv_log_d(message)
   if debug then print(message) end
@@ -105,6 +106,25 @@ function lgtv_is_current_audio_device()
   return false
 end
 
+
+-- Define the callback function to handle screen changes
+function screenWatcherCallback()
+  local currentScreens = hs.screen.allScreens()
+
+  -- Compare the number of screens
+  if (#currentScreens > #previousScreens) and lgtv_is_connected() then
+      lgtv_log_d("LGTV connected")
+      bscpy_exec_command("set_device_info "..tv_input.." pc '"..connection_name.."'")
+  elseif #currentScreens < #previousScreens then
+      lgtv_log_d("A screen has been disconnected!")
+  end
+  -- Update the previousScreens list
+  previousScreens = currentScreens
+end
+
+screenWatcher = hs.screen.watcher.new(screenWatcherCallback)
+
+
 function lgtv_log_init()
   lgtv_log_d ("TV name: "..tv_name)
   lgtv_log_d ("TV input: "..tv_input)
@@ -153,10 +173,10 @@ watcher = hs.caffeinate.watcher.new(function(eventType)
       return
     end
 
+    bscpy_exec_command("turn_screen_off")
     -- This puts the TV in standby mode.
     -- For true "power off" use `off` instead of `screenOff`.
     lgtv_exec_command(screen_off_command)
-    bscpy_exec_command("turn_screen_off")
     lgtv_log_d("TV screen was turned off with command `"..screen_off_command.."`.")
   end
 end)
@@ -184,6 +204,7 @@ audio_event_tap = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap
 end)
 
 watcher:start()
+screenWatcher:start()
 
 if control_audio then
   audio_event_tap:start()
