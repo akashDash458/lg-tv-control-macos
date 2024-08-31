@@ -2,7 +2,9 @@
 -- Tested with LGWebOSRemote as of December 11, 2023.
 --
 
-local tv_input = "HDMI_1" -- Input to which your Mac is connected
+local tv_input = "HDMI_3" -- Input to which your Mac is connected
+local tv_ip = "192.168.2.109" -- IP address of the TV. can be found using ~/bin/lgtv scan ssl
+local connection_name = "MacBook Pro" -- name of the connection
 local switch_input_on_wake = true -- Switch input to Mac when waking the TV
 local prevent_sleep_when_using_other_input = true -- Prevent sleep when TV is set to other input (ie: you're watching Netflix and your Mac goes to sleep)
 local debug = false  -- If you run into issues, set to true to enable debug messages
@@ -17,6 +19,8 @@ local connected_tv_identifiers = {"LG TV", "LG TV SSCR2"} -- Used to identify th
 local screen_off_command = "off" -- use "screenOff" to keep the TV on, but turn off the screen.
 local lgtv_path = "~/bin/lgtv" -- Full path to lgtv executable
 local lgtv_cmd = lgtv_path.." --ssl --name "..tv_name
+local bscpy_path = "~/bin/bscpylgtv" -- Full path to bscpylgtv executable
+local bscpy_cmd = bscpy_path.." "..tv_ip
 local app_id = "com.webos.app."..tv_input:lower():gsub("_", "")
 
 function lgtv_log_d(message)
@@ -77,6 +81,12 @@ function lgtv_exec_command(command)
   return hs.execute(command)
 end
 
+function bscpy_exec_command(command)
+  command = bscpy_cmd.." "..command
+  lgtv_log_d("Executing command: "..command)
+  return hs.execute(command)
+end 
+
 function lgtv_disabled()
   return lgtv_file_exists("./disable_lgtv") or lgtv_file_exists(os.getenv('HOME') .. "/.disable_lgtv")
 end
@@ -126,6 +136,7 @@ watcher = hs.caffeinate.watcher.new(function(eventType)
 
     lgtv_exec_command("on") -- wake on lan
     lgtv_exec_command("screenOn") -- turn on screen
+    bscpy_exec_command("set_device_info "..tv_input.." pc '"..connection_name.."'")
     lgtv_log_d("TV was turned on")
 
     if lgtv_current_app_id() ~= app_id and switch_input_on_wake then
@@ -145,6 +156,7 @@ watcher = hs.caffeinate.watcher.new(function(eventType)
     -- This puts the TV in standby mode.
     -- For true "power off" use `off` instead of `screenOff`.
     lgtv_exec_command(screen_off_command)
+    bscpy_exec_command("turn_screen_off")
     lgtv_log_d("TV screen was turned off with command `"..screen_off_command.."`.")
   end
 end)

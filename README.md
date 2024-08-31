@@ -18,6 +18,7 @@ Before proceeding, make sure you have [Homebrew](https://brew.sh) installed. All
 - Python 3.8.18
 - [Hammerspoon](https://www.hammerspoon.org/)
 - [LGWebOSRemote](https://github.com/klattimer/LGWebOSRemote).
+- [bscpylgtvcommand](https://github.com/chros73/bscpylgtv)
 
 Run the following commands in Terminal:
 

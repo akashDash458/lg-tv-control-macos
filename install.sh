@@ -11,27 +11,25 @@ if [[ " $* " =~ " --help " ]]; then
 fi
 
 if [[ ! " $* " =~ " --skip-homebrew " ]]; then
-  if ! command -v brew &> /dev/null
-  then
+  if ! command -v brew &>/dev/null; then
     echo -e "\033[1;31mHomebrew is not installed. Please install Homebrew and try again.\033[0m"
     exit 1
   fi
 fi
 
 if [[ ! " $* " =~ " --skip-mise " ]]; then
-  if ! command -v mise &> /dev/null
-  then
+  if ! command -v mise &>/dev/null; then
     echo -e "\033[1;33mMise is not installed. Preparing to install it... CTRL-C to abort.\033[0m"
     sleep 3
 
     echo -e "\033[32mInstalling Mise...\033[0m"
     brew install mise
 
-    echo 'eval "$(mise activate bash)"' >> ~/.bashrc
-    echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+    echo 'eval "$(mise activate bash)"' >>~/.bashrc
+    echo 'eval "$(mise activate zsh)"' >>~/.zshrc
 
     if [ -f ~/.config/fish/config.fish ]; then
-      echo 'eval mise activate fish | source' >> ~/.config/fish/config.fish
+      echo 'eval mise activate fish | source' >>~/.config/fish/config.fish
     fi
   fi
 fi
@@ -41,7 +39,7 @@ brew install -q hammerspoon
 mkdir -p ~/.hammerspoon
 touch ~/.hammerspoon/init.lua
 if ! grep -q 'require "lgtv_init"' ~/.hammerspoon/init.lua; then
-  echo "require \"lgtv_init\"" >> ~/.hammerspoon/init.lua
+  echo "require \"lgtv_init\"" >>~/.hammerspoon/init.lua
 fi
 cp ./lgtv_init.lua ~/.hammerspoon/lgtv_init.lua
 
@@ -49,7 +47,7 @@ echo -e "\033[32mDownloading LGWebOSRemote...\033[0m"
 mkdir -p ~/opt
 cd ~/opt
 rm -rf LGWebOSRemote
-git clone  --quiet https://github.com/klattimer/LGWebOSRemote.git
+git clone --quiet https://github.com/klattimer/LGWebOSRemote.git
 
 echo -e "\033[32mInstalling Python...\033[0m"
 cd LGWebOSRemote
@@ -58,9 +56,19 @@ mise install
 mise exec -- python -V
 
 echo -e "\033[32mInstalling LGWebOSRemote...\033[0m"
-mise exec -- pip install --upgrade pip > /dev/null
-mise exec -- pip install setuptools > /dev/null
-mise exec -- python setup.py install > /dev/null
+mise exec -- pip install --upgrade pip >/dev/null
+mise exec -- pip install setuptools >/dev/null
+mise exec -- python setup.py install >/dev/null
+
+echo -e "\033[32mDownloading bscpylgtv...\033[0m"
+cd ~/opt
+rm -rf bscpylgtv
+git clone --quiet https://github.com/chros73/bscpylgtv.git
+
+echo -e "\033[32mInstalling bscpylgtv...\033[0m"
+cd bscpylgtv
+mise exec -- python setup.py install >/dev/null
+# mise exec -- pip install bscpylgtv
 
 LGTVPATH=$(mise exec -- which lgtv)
 echo "lgtv executable can be found at $LGTVPATH"
@@ -68,9 +76,19 @@ mkdir -p ~/bin
 rm -f ~/bin/lgtv
 ln -s $LGTVPATH ~/bin/lgtv
 
+# Locate the bscpylgtv executable and create a symbolic link (if it exists)
+BSCPYLGTVPATH=$(mise exec -- which bscpylgtvcommand)
+if [ -n "$BSCPYLGTVPATH" ]; then
+  echo "bscpylgtv executable can be found at $BSCPYLGTVPATH"
+  rm -f ~/bin/bscpylgtv
+  ln -s $BSCPYLGTVPATH ~/bin/bscpylgtv
+else
+  echo -e "\033[1;31mbscpylgtv executable not found. Skipping link creation.\033[0m"
+fi
+
 $LGTVPATH scan ssl
 
 echo -e "\033[32m\n--------------------------------------------------------------------\033[0m"
 echo " Installation Complete!"
-echo " You can now use the '~/bin/lgtv' command to control your LG TV."
+echo " You can now use the '~/bin/lgtv' and '~/bin/bscpylgtv' command to control your LG TV."
 echo -e "\033[32m--------------------------------------------------------------------\n\033[0m"
