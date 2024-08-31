@@ -52,6 +52,7 @@ function lgtv_current_app_id()
       end
     end
   end
+  return ""
 end
 
 function lgtv_is_connected()
