@@ -82,7 +82,7 @@ To turn it back on, try:
 
 ### Changes needed to get the script working:
 Following variables need to be changed in `~/.hammerspoon/init_lgtv.lua` as per the user's setup:
-- `tv_input` : HDMI 1/2/2/4
+- `tv_input` : HDMI 1/2/3/4, depending on the connection.
 - `tv_ip`: IP address of the TV. Can be found by running `~/bin/lgtv scan ssl`. (Might need to be changed if TV's network changes)
 - `connection_name`: (optional) Preferred connection name, like `My Mac Book`
 
