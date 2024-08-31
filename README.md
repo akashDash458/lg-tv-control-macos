@@ -36,7 +36,7 @@ Run the following commands in Terminal:
 
 ```bash
 cd /tmp
-git clone https://github.com/cmer/lg-tv-control-macos.git
+git clone https://github.com/akashDash458/lg-tv-control-macos.git
 cd lg-tv-control-macos
 ./install.sh
 ```
