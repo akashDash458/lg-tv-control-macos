@@ -1,6 +1,18 @@
 # LG TV Control for macOS
 
-Automatically wake/sleep and change the input of your LG TV when used as a monitor on macOS.
+Forked from [cmer/lg-tv-control-macos](https://github.com/cmer/lg-tv-control-macos)
+
+Original Features:
+- Automatically wake/sleep and change the input of your LG TV when used as a monitor on macOS.
+- Audio Control
+
+
+Added features:
+- Detect new display being connected and turn the new display on
+- Apply input settings to the new display (set mode to PC, change connection name)
+
+
+
 
 This script uses Hammerspoon to detect system events such as power off, sleep, and wake.
 
@@ -61,11 +73,17 @@ Now, try the following:
 ~/bin/lgtv --name MyTV --ssl swInfo
 ~/bin/lgtv --name MyTV --ssl screenOff
 ```
-
 If everything is working as expected, your screen should turn off.
 
-Change the HDMI input at the top of `~/.hammerspoon/init_lgtv.lua` script, if needed.
+To turn it back on, try: 
+```sh
+~/bin/lgtv --name MyTV --ssl screenOn
+```
 
-## Special Thanks
+### Changes needed to get the script working:
+Following variables need to be changed in `~/.hammerspoon/init_lgtv.lua` as per the user's setup:
+- `tv_input` : HDMI 1/2/2/4
+- `tv_ip`: IP address of the TV. Can be found by running `~/bin/lgtv scan ssl`. (Might need to be changed if TV's network changes)
+- `connection_name`: (optional) Preferred connection name, like `My Mac Book`
 
-Thanks to [@greyshi](https://github.com/greyshi) for extending upon my [initial Wake On LAN gist](https://gist.github.com/cmer/bd40d9da0055d257c5aab2e0143ee17b) and introducing LGWebOSRemote.
+

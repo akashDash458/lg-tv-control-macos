@@ -114,6 +114,8 @@ function screenWatcherCallback()
   -- Compare the number of screens
   if (#currentScreens > #previousScreens) and lgtv_is_connected() then
       lgtv_log_d("LGTV connected")
+      lgtv_exec_command("on") -- wake on lan
+      lgtv_exec_command("screenOn") -- turn on screen
       bscpy_exec_command("set_device_info "..tv_input.." pc '"..connection_name.."'")
   elseif #currentScreens < #previousScreens then
       lgtv_log_d("A screen has been disconnected!")
