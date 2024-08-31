@@ -8,7 +8,7 @@ Original Features:
 
 
 Added features:
-- Detect new display being connected and turn the new display on
+- Detect new display being connected/disconnected and turn the new display on/off
 - Apply input settings to the new display (set mode to PC, change connection name)
 
 
@@ -16,11 +16,21 @@ Added features:
 
 This script uses Hammerspoon to detect system events such as power off, sleep, and wake.
 
+### Removing old versions of LGWebOSRemote
+
+If you had previously installed LGWebOSRemote with PIP,
+you can remove the old version by running:
+
+```
+rm -fr ~/opt/lgtv
+```
+
+
 ## Pre-installation Requirements
 
 - [Homebrew](https://brew.sh/)
 
-### Installation
+## Installation
 
 Use the installation script for a simple and convenient installation process.
 
@@ -41,15 +51,6 @@ cd lg-tv-control-macos
 ./install.sh
 ```
 
-
-#### Removing old versions of LGWebOSRemote
-
-If you had previously installed LGWebOSRemote with PIP,
-you can remove the old version by running:
-
-```
-rm -fr ~/opt/lgtv
-```
 
 ### Configuring LGWebOSRemote
 
