@@ -80,13 +80,14 @@ To turn it back on, try:
 ```sh
 ~/bin/lgtv --name MyTV --ssl screenOn
 ```
-Now launch `hammerspoon` app in mac (automatically installed by script), and the automations should work.
-Add hammerspoon to `Open at Login` items in Mac system settings.
 
 ### Changes needed to get the script working:
 Following variables need to be changed in `~/.hammerspoon/init_lgtv.lua` as per the user's setup:
 - `tv_input` : HDMI 1/2/3/4, depending on the connection.
 - `tv_ip`: IP address of the TV. Can be found by running `~/bin/lgtv scan ssl`. (Might need to be changed if TV's network changes)
 - `connection_name`: (optional) Preferred connection name, like `My Mac Book`
+
+Now launch `hammerspoon` app in mac (automatically installed by script), and the automations should work.
+Add hammerspoon to `Open at Login` items in Mac system settings, to launch this automatically at startup.
 
 
